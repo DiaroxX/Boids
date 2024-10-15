@@ -11,6 +11,11 @@ class Vector:
     def magnitude(self):
         return sqrt(self.x**2 + self.y**2)
     
+    def magnitude_tore(self, width, height):
+        x = min(abs(self.x), abs(width-self.x))
+        y = min(abs(self.y), abs(height-self.y))
+        return sqrt(x*x + y*y)
+    
     def angle(self):
         # atan2 is always between -pi and pi
         return atan2(self.y, self.x)

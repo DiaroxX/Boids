@@ -9,43 +9,50 @@ class Boid:
     A single simulated boid that can interact with its surroundings and act
     according to boids rules.
     """
-    def __init__(self, pos, vel):
+    def __init__(self, pos, vel, color=(255, 255, 255)):
         self.position = pos
         self.velocity = vel
         self.acceleration = Vector()
         self.max_speed = 0.3
         self.size = 2
         self.heading = self.velocity.angle() + math.pi / 2
-        self.color = (255, 255, 255)
+        self.color = color
 
     def bounce(self, width, height):
         #corrigé je pense
         if self.position.x > width:
             self.position.x //= width
         if self.position.x < 0:
-            self.position.x //= width
+            self.position.x //= width #utile seulement si le boid se déplace de plus d'un écran par frame
+            self.position.x += width
+
         if self.position.y > height:
             self.position.y //= height
         if self.position.y < 0:
-            self.position.y //height
+            self.position.y //= height #utile seulement si le boid se déplace de plus d'un écran par frame
+            self.position.y += height
 
-    def interact(self, d, n):
+    def interact(self, d, v, n, width, height, coeffs=(10, 0.002, 1)):
         # random behaviour
         #self.acceleration += Vector(random.gauss(0, 0.4), random.gauss(0, 0.4))
 
+        c1, c2, c3 = coeffs
+
         #f evitement:
-        d_mag = d.magnitude()
-        self.acceleration += d/(n*d_mag*d_mag)
+        d_mag = d.magnitude_tore(width, height)
+        self.acceleration += c1*d/(n*d_mag*d_mag)
 
         #f groupement
-        self.acceleration -= d/n
+        self.acceleration -= c2*d/n
+
+        #f alignement
+        self.acceleration += c3*v/n
 
         
 
     def update(self, dt):
         self.velocity += self.acceleration * dt
         self.velocity.cap_magnitude(self.max_speed)
-        #print(self.max_speed, self.velocity.magnitude())
         self.position += self.velocity * dt
         self.heading = self.velocity.angle() + math.pi / 2
         # reset acceleration

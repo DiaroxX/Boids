@@ -23,12 +23,15 @@ class Flock:
             vel_y = random.gauss(0, 1)
             vel = Vector(vel_x, vel_y)
             self.boids.append(Boid(pos, vel))
+        
+        #on choisit un boid a colorier en rouge pour l'observation
+        self.boids[0].color = (255, 0, 0)
 
     def get_neighbours(self, boid, detection_radius):
         neighbours = set()
         for other in self.boids:
             d = boid.position - other.position
-            if d.magnitude() <= detection_radius:
+            if d.magnitude_tore(self.width, self.height) <= detection_radius:
                 neighbours.add(other)
 
         neighbours.remove(boid)
@@ -40,7 +43,7 @@ class Flock:
             nb_neighbours = len(neighbours)
             for neighbour in neighbours:
                 d = boid.position - neighbour.position
-                boid.interact(d, nb_neighbours)
+                boid.interact(d, neighbour.velocity, nb_neighbours, self.width, self.height)
 
 
         for boid in self.boids:
