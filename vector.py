@@ -1,5 +1,10 @@
 from math import sqrt, atan2
 
+def value_with_min_abs(a, b):
+    if abs(a) < abs(b):
+        return a
+    return b
+
 class Vector:
     """
     A helper class to allow for easier manipulation of geometric data in 2D
@@ -8,13 +13,24 @@ class Vector:
         self.x = x
         self.y = y
 
+    def distance_tore(self, other, width, height):
+        d = self.distance_normale(other)
+        x1 = d.x
+        x2 = width - x1
+        y1 = d.y
+        y2 = height - y1
+        return Vector(value_with_min_abs(x1, x2), value_with_min_abs(y1, y2))
+    
+    def distance_normale(self, other):
+        return other - self
+    
+    def distance(self, other, width, height, isTore=True):
+        if isTore:
+            return self.distance_tore(other, width, height)
+        return self.distance_normale(other)
+
     def magnitude(self):
         return sqrt(self.x**2 + self.y**2)
-    
-    def magnitude_tore(self, width, height):
-        x = min(abs(self.x), abs(width-self.x))
-        y = min(abs(self.y), abs(height-self.y))
-        return sqrt(x*x + y*y)
     
     def angle(self):
         # atan2 is always between -pi and pi

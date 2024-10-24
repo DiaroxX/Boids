@@ -8,7 +8,7 @@ WIDTH = 800
 HEIGHT = 600
 WINDOW_NAME = "Boids!"
 BACKGRND_COLOR = (20, 20, 20)
-DETECTION_RADIUS = 100 #a mettre en arguments
+DETECTION_RADIUS = 60 #a mettre en arguments
 
 
 def run(num_boids):

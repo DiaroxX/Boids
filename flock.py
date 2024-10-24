@@ -30,8 +30,8 @@ class Flock:
     def get_neighbours(self, boid, detection_radius):
         neighbours = set()
         for other in self.boids:
-            d = boid.position - other.position
-            if d.magnitude_tore(self.width, self.height) <= detection_radius:
+            d = boid.position.distance(other.position, self.width, self.height)
+            if d.magnitude() <= detection_radius:
                 neighbours.add(other)
 
         neighbours.remove(boid)
@@ -42,8 +42,8 @@ class Flock:
             neighbours = self.get_neighbours(boid, detection_radius)
             nb_neighbours = len(neighbours)
             for neighbour in neighbours:
-                d = boid.position - neighbour.position
-                boid.interact(d, neighbour.velocity, nb_neighbours, self.width, self.height)
+                d = boid.position.distance(neighbour.position, self.width, self.height)
+                boid.interact(d, neighbour.velocity, nb_neighbours)
 
 
         for boid in self.boids:

@@ -32,18 +32,18 @@ class Boid:
             self.position.y //= height #utile seulement si le boid se déplace de plus d'un écran par frame
             self.position.y += height
 
-    def interact(self, d, v, n, width, height, coeffs=(10, 0.002, 1)):
+    def interact(self, d, v, n, coeffs=(35, 0.015, 7)):
         # random behaviour
         #self.acceleration += Vector(random.gauss(0, 0.4), random.gauss(0, 0.4))
 
         c1, c2, c3 = coeffs
 
         #f evitement:
-        d_mag = d.magnitude_tore(width, height)
-        self.acceleration += c1*d/(n*d_mag*d_mag)
+        d_mag = d.magnitude()
+        self.acceleration -= c1*d/(n*d_mag*d_mag)
 
         #f groupement
-        self.acceleration -= c2*d/n
+        self.acceleration += c2*d/n
 
         #f alignement
         self.acceleration += c3*v/n
