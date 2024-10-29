@@ -19,6 +19,7 @@ def run(num_boids):
     flock = Flock(num_boids, WIDTH, HEIGHT)
 
     run = True
+    pause = False
     clock = pygame.time.Clock()
     framerate = 60
 
@@ -37,11 +38,14 @@ def run(num_boids):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
+                if event.key == pygame.K_SPACE:
+                    pause = not pause
 
-        screen.fill(BACKGRND_COLOR)
-        flock.update(dt, detection_radius=DETECTION_RADIUS)
-        flock.draw(screen)
-        pygame.display.update()
+        if not pause:
+            screen.fill(BACKGRND_COLOR)
+            flock.update(dt, detection_radius=DETECTION_RADIUS)
+            flock.draw(screen)
+            pygame.display.update()
 
     pygame.quit()
     exit()

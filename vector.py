@@ -1,9 +1,13 @@
-from math import sqrt, atan2
+from math import sqrt, atan2, pi, cos, sin
 
 def value_with_min_abs(a, b):
     if abs(a) < abs(b):
         return a
     return b
+
+def angle_diff(a, b):
+    diff = a-b
+    return (diff+pi) % (2*pi) - pi
 
 class Vector:
     """
@@ -71,3 +75,19 @@ class Vector:
         final_mag = min(self_mag, mag_max)
         self.x *= final_mag / self_mag
         self.y *= final_mag / self_mag
+    
+    def cap_angle_diff(self, self_before, max_ang_diff=pi/8):
+        mag = self.magnitude()
+        curr_ang = self.angle()
+        ang_before = self_before.angle()
+        new_ang = curr_ang
+
+        ang_diff = angle_diff(curr_ang, ang_before)
+
+        if ang_diff > max_ang_diff:
+            new_ang = ang_before + max_ang_diff
+        elif -ang_diff > max_ang_diff:
+            new_ang = ang_before - max_ang_diff
+
+        self.x = cos(new_ang) * mag
+        self.y = sin(new_ang) * mag

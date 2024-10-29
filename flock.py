@@ -1,6 +1,6 @@
 import random 
 from boid import Boid
-from vector import Vector
+from vector import Vector, angle_diff
 import math
 
 class Flock:
@@ -37,8 +37,8 @@ class Flock:
 
             d = boid.position.distance(other.position, self.width, self.height)
             if d.magnitude() <= detection_radius:
-                angle_diff = abs(boid.velocity.angle() - d.angle())
-                if not cone or angle_diff <= fov:
+                ang_diff = abs(angle_diff(boid.velocity.angle(), d.angle()))
+                if not cone or ang_diff <= fov/2:
                     neighbours.add(other)
                     if boid == self.boids[0] and boid != other:
                         other.color = (0, 0, 255)
@@ -50,19 +50,36 @@ class Flock:
 
     def update(self, dt, detection_radius):
         FOV = math.pi/2
+        tore = False
+        padding = 50
+
         for boid in self.boids:
-            neighbours = self.get_neighbours(boid, detection_radius, True, FOV)
+            neighbours = self.get_neighbours(boid, detection_radius, cone=True, fov=FOV)
             nb_neighbours = len(neighbours)
             for neighbour in neighbours:
-                d = boid.position.distance(neighbour.position, self.width, self.height)
+                d = boid.position.distance(neighbour.position, self.width, self.height, tore)
                 boid.interact(d, neighbour.velocity, nb_neighbours)
 
+        #f vent
+        orientation = math.pi/4
+        wind_strengh = 0.001
+        wind = Vector(math.cos(orientation), math.sin(orientation)) * wind_strengh
+        boid.acceleration += wind
+
+        #f evite bords (deplacé dans bounce)
+        """
+        rappel_strengh = 100
+        if not tore:
+            rappel_au_centre = Vector(1/2 - boid.position.x/(self.width-padding), 1/2 - boid.position.y/(self.height-padding))
+            rappel_strengh_mag = rappel_au_centre.magnitude()
+            boid.acceleration += rappel_au_centre * rappel_strengh * (rappel_strengh_mag*rappel_strengh_mag)
+        """
 
         for boid in self.boids:
-            boid.bounce(self.width, self.height)
+            boid.bounce(self.width, self.height, tore, padding)
                 
         for boid in self.boids:
-            boid.update(dt)
+            boid.update(dt, max_velocity_ang_diff=math.pi/32)
         
 
     def draw(self, screen):

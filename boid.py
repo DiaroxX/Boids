@@ -18,23 +18,34 @@ class Boid:
         self.heading = self.velocity.angle() + math.pi / 2
         self.color = color
 
-    def bounce(self, width, height):
-        #corrigé je pense
-        """
-        if self.position.x > width:
-            self.position.x //= width
-        if self.position.x < 0:
-            self.position.x //= width #utile seulement si le boid se déplace de plus d'un écran par frame
-            self.position.x += width
+    def bounce(self, width, height, tore, padding=0):
+        if tore:
+            self.position.x %= width
+            self.position.y %= height
+        else:
+            if self.position.x < padding:
+                self.position.x = 2*padding - self.position.x
+                self.velocity.x = abs(self.velocity.x)
+                self.acceleration.x += 100
+            elif self.position.x > width - padding:
+                self.position.x = 2*(width - padding) - self.position.x
+                self.velocity.x = -abs(self.velocity.x)
+                self.acceleration.x -= 100
 
-        if self.position.y > height:
-            self.position.y //= height
-        if self.position.y < 0:
-            self.position.y //= height #utile seulement si le boid se déplace de plus d'un écran par frame
-            self.position.y += height
-        """
-        self.position.x %= width
-        self.position.y %= height
+            if self.position.y < padding:
+                self.position.y = 2*padding - self.position.y
+                self.velocity.y = abs(self.velocity.y)
+                self.acceleration.y += 100
+            elif self.position.y > height - padding:
+                self.position.y = 2*(height - padding) - self.position.y
+                self.velocity.y = -abs(self.velocity.y)
+                self.acceleration.y -= 100
+
+
+            #self.position.x = max(padding, self.position.x)
+            #self.position.x = min(width-padding, self.position.x)
+            #self.position.y = max(padding, self.position.y)
+            #self.position.y = min(height-padding, self.position.y)
 
     def interact(self, d, v, n, coeffs=(25, 0.015, 7)):
         # random behaviour
@@ -51,18 +62,13 @@ class Boid:
 
         #f alignement
         self.acceleration += c3*v/n
-
-        #f vent
-        orientation = math.pi*2.25
-        wind_strengh = 0.001
-        wind = Vector(math.cos(orientation), math.sin(orientation)) * wind_strengh
-        self.acceleration += wind
-
         
 
-    def update(self, dt):
+    def update(self, dt, max_velocity_ang_diff=math.pi/16):
+        v_initiale = Vector(self.velocity.x, self.velocity.y)
         self.velocity += self.acceleration * dt
         self.velocity.cap_magnitude(self.max_speed)
+        self.velocity.cap_angle_diff(v_initiale, max_velocity_ang_diff)
         self.position += self.velocity * dt
         self.heading = self.velocity.angle() + math.pi / 2
         # reset acceleration
