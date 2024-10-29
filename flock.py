@@ -1,6 +1,7 @@
 import random 
 from boid import Boid
 from vector import Vector
+import math
 
 class Flock:
     """
@@ -27,19 +28,30 @@ class Flock:
         #on choisit un boid a colorier en rouge pour l'observation
         self.boids[0].color = (255, 0, 0)
 
-    def get_neighbours(self, boid, detection_radius):
+    def get_neighbours(self, boid, detection_radius, cone=False, fov=math.pi/2):
         neighbours = set()
         for other in self.boids:
+
+            if boid == self.boids[0] and boid != other:
+                other.color = (255, 255, 255)
+
             d = boid.position.distance(other.position, self.width, self.height)
             if d.magnitude() <= detection_radius:
-                neighbours.add(other)
+                angle_diff = abs(boid.velocity.angle() - d.angle())
+                if not cone or angle_diff <= fov:
+                    neighbours.add(other)
+                    if boid == self.boids[0] and boid != other:
+                        other.color = (0, 0, 255)
 
-        neighbours.remove(boid)
+        if boid in neighbours:
+            neighbours.remove(boid)
+
         return neighbours
 
     def update(self, dt, detection_radius):
+        FOV = math.pi/2
         for boid in self.boids:
-            neighbours = self.get_neighbours(boid, detection_radius)
+            neighbours = self.get_neighbours(boid, detection_radius, True, FOV)
             nb_neighbours = len(neighbours)
             for neighbour in neighbours:
                 d = boid.position.distance(neighbour.position, self.width, self.height)

@@ -20,6 +20,7 @@ class Boid:
 
     def bounce(self, width, height):
         #corrigé je pense
+        """
         if self.position.x > width:
             self.position.x //= width
         if self.position.x < 0:
@@ -31,8 +32,11 @@ class Boid:
         if self.position.y < 0:
             self.position.y //= height #utile seulement si le boid se déplace de plus d'un écran par frame
             self.position.y += height
+        """
+        self.position.x %= width
+        self.position.y %= height
 
-    def interact(self, d, v, n, coeffs=(35, 0.015, 7)):
+    def interact(self, d, v, n, coeffs=(25, 0.015, 7)):
         # random behaviour
         #self.acceleration += Vector(random.gauss(0, 0.4), random.gauss(0, 0.4))
 
@@ -47,6 +51,12 @@ class Boid:
 
         #f alignement
         self.acceleration += c3*v/n
+
+        #f vent
+        orientation = math.pi*2.25
+        wind_strengh = 0.001
+        wind = Vector(math.cos(orientation), math.sin(orientation)) * wind_strengh
+        self.acceleration += wind
 
         
 
