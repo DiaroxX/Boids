@@ -10,28 +10,12 @@ WINDOW_NAME = "Boids!"
 BACKGRND_COLOR = (20, 20, 20)
 
 
-def run(args):
-    (
-        detection_radius,
-        num_boids,
-        seed,
-        cone,
-        fov,
-        padding,
-        tore,
-        alignment_weight,
-        cohesion_weight,
-        avoidance_weight
-    ) = args
-
-    args_flock = args[1:7]
-    weigths_forces = args[7:]
-
+def run(weigths_forces, args_flock, wind):
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption(WINDOW_NAME)
 
-    flock = Flock(WIDTH, HEIGHT, *args_flock, weigths_forces)
+    flock = Flock(WIDTH, HEIGHT, *args_flock, weigths_forces, wind)
 
     run = True
     pause = False
@@ -58,7 +42,7 @@ def run(args):
 
         if not pause:
             screen.fill(BACKGRND_COLOR)
-            flock.update(dt, detection_radius)
+            flock.update(dt)
             flock.draw(screen)
             pygame.display.update()
 
@@ -92,23 +76,27 @@ def read_argv():
     if nb_args_given < 7:
         error_and_exit("Nombre d'arguments incorrect")
 
-    args_def = [
-        100,    #detection_radius
-        20,     #alignment_weight
-        0.005,  #cohesion_weight
-        1,      #avoidance_weight
-        100,    #num_boids
-        None,   #seed
-        False,  #cone
-        3.1415, #fov
-        10,     #padding
-        True    #tore
-    ]
+    detection_radius = int(sys.argv[1])
+    alignment_weight = float(sys.argv[2])
+    cohesion_weight = float(sys.argv[3])
+    avoidance_weight = float(sys.argv[4])
+    num_boids = int(sys.argv[5])
+    seed = int(sys.argv[6])
+    isCone = False if nb_args_given <= 7 else sys.argv[7] == "True"
+    fov  = 3.14 if nb_args_given <= 8 else float(sys.argv[8])
+    isTore = True if nb_args_given <= 9 else sys.argv[9] == "True"
+    padding = 10 if nb_args_given <= 10 else int(sys.argv[10])
+    bounce_weight = 100 if nb_args_given <= 11 else int(sys.argv[11])
+    wind_weight = 0 if nb_args_given <= 12 else float(sys.argv[12])
+    wind_orientation = 0 if nb_args_given <= 13 else float(sys.argv[13])
+    max_rotation = 3.2 if nb_args_given <= 14 else float(sys.argv[14])
 
+    weigths_forces = (alignment_weight, cohesion_weight, avoidance_weight, bounce_weight)
+    args_flock = (detection_radius, num_boids, seed, isCone, fov, padding, isTore, max_rotation)
+    wind = wind_weight, wind_orientation
     
-    
-    return tuple(args_def)
+    return weigths_forces, args_flock, wind
 
 if __name__ == "__main__":
     args = read_argv()
-    run(args)
+    run(*args)

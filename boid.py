@@ -8,59 +8,62 @@ class Boid:
     A single simulated boid that can interact with its surroundings and act
     according to boids rules.
     """
-    def __init__(self, pos, vel, color=(255, 255, 255)):
+    def __init__(self, pos, vel, ):
         self.position = pos
         self.velocity = vel
         self.acceleration = Vector()
-        self.max_speed = 0.3
+        #vitesse max deplacee dans flock car commune a tous les boids
         self.size = 2
         self.heading = self.velocity.angle() + math.pi / 2
-        self.color = color
+        self.color = (255, 255, 255)
 
-    def bounce(self, width, height, tore, padding):
-        if tore:
+    def bounce(self, width, height, isTore, padding, weight):
+        if isTore:
             self.position.x %= width
             self.position.y %= height
         else:
             if self.position.x < padding:
                 self.position.x = 2*padding - self.position.x
                 self.velocity.x = abs(self.velocity.x)
-                self.acceleration.x += 100
+                self.acceleration.x += weight
             elif self.position.x > width - padding:
                 self.position.x = 2*(width - padding) - self.position.x
                 self.velocity.x = -abs(self.velocity.x)
-                self.acceleration.x -= 100
+                self.acceleration.x -= weight
 
             if self.position.y < padding:
                 self.position.y = 2*padding - self.position.y
                 self.velocity.y = abs(self.velocity.y)
-                self.acceleration.y += 100
+                self.acceleration.y += weight
             elif self.position.y > height - padding:
                 self.position.y = 2*(height - padding) - self.position.y
                 self.velocity.y = -abs(self.velocity.y)
-                self.acceleration.y -= 100
+                self.acceleration.y -= weight
 
 
-    def interact(self, d, v, n, coeffs):
-        c1, c2, c3 = coeffs
+    def interact(self, d, v, n, alignment_weight, cohesion_weight, avoidance_weight):
+        """
+        dans cette modélisation interact realise l'interaction entre 2 boids voisins
+        et non pas celle d'un boid avec l'ensemble des ses voisins
+        """
         d_mag = d.magnitude()
 
         #f evitement:
-        self.acceleration -= c1*d/(n*d_mag*d_mag)
+        self.acceleration -= avoidance_weight*d/(n*d_mag*d_mag)
 
         #f groupement
-        self.acceleration += c2*d/n
+        self.acceleration += cohesion_weight*d/n
 
         #f alignement
-        self.acceleration += c3*v/n
+        self.acceleration += alignment_weight*v/n
         
 
-    def update(self, dt, max_velocity_ang_diff=math.pi/16):
+    def update(self, dt, max_speed, max_rotation):
         v_initiale = Vector(self.velocity.x, self.velocity.y)
 
         self.velocity += self.acceleration * dt
-        self.velocity.cap_angle_diff(v_initiale, max_velocity_ang_diff)
-        self.velocity.cap_magnitude(self.max_speed)
+        self.velocity.cap_angle_diff(v_initiale, max_rotation)
+        self.velocity.cap_magnitude(max_speed)
         
         self.position += self.velocity * dt
         

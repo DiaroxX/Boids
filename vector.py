@@ -20,15 +20,15 @@ class Vector:
     def distance_tore(self, other, width, height):
         d = self.distance_normale(other)
         x1 = d.x
-        x2 = width - x1
+        x2 = x1 - width if x1 > 0 else x1 + width
         y1 = d.y
-        y2 = height - y1
+        y2 = y1 - height if y1 > 0 else y1 + height
         return Vector(value_with_min_abs(x1, x2), value_with_min_abs(y1, y2))
     
     def distance_normale(self, other):
         return other - self
     
-    def distance(self, other, width, height, isTore=True):
+    def distance(self, other, width, height, isTore):
         if isTore:
             return self.distance_tore(other, width, height)
         return self.distance_normale(other)
@@ -76,7 +76,7 @@ class Vector:
         self.x *= final_mag / self_mag
         self.y *= final_mag / self_mag
     
-    def cap_angle_diff(self, self_before, max_ang_diff=pi/8):
+    def cap_angle_diff(self, self_before, max_ang_diff):
         mag = self.magnitude()
         curr_ang = self.angle()
         ang_before = self_before.angle()
@@ -84,10 +84,10 @@ class Vector:
 
         ang_diff = angle_diff(curr_ang, ang_before)
 
-        if ang_diff > max_ang_diff:
-            new_ang = ang_before + max_ang_diff
-        elif -ang_diff > max_ang_diff:
-            new_ang = ang_before - max_ang_diff
+        if abs(ang_diff) > max_ang_diff:
+            new_ang = ang_before + max_ang_diff * (1 if ang_diff > 0 else -1)
+        else:
+            new_ang = curr_ang
 
         self.x = cos(new_ang) * mag
         self.y = sin(new_ang) * mag
