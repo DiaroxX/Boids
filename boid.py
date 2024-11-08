@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import random
 import pygame
 from vector import Vector
 
@@ -18,7 +17,7 @@ class Boid:
         self.heading = self.velocity.angle() + math.pi / 2
         self.color = color
 
-    def bounce(self, width, height, tore, padding=0):
+    def bounce(self, width, height, tore, padding):
         if tore:
             self.position.x %= width
             self.position.y %= height
@@ -42,19 +41,11 @@ class Boid:
                 self.acceleration.y -= 100
 
 
-            #self.position.x = max(padding, self.position.x)
-            #self.position.x = min(width-padding, self.position.x)
-            #self.position.y = max(padding, self.position.y)
-            #self.position.y = min(height-padding, self.position.y)
-
-    def interact(self, d, v, n, coeffs=(25, 0.015, 7)):
-        # random behaviour
-        #self.acceleration += Vector(random.gauss(0, 0.4), random.gauss(0, 0.4))
-
+    def interact(self, d, v, n, coeffs):
         c1, c2, c3 = coeffs
+        d_mag = d.magnitude()
 
         #f evitement:
-        d_mag = d.magnitude()
         self.acceleration -= c1*d/(n*d_mag*d_mag)
 
         #f groupement
@@ -66,11 +57,15 @@ class Boid:
 
     def update(self, dt, max_velocity_ang_diff=math.pi/16):
         v_initiale = Vector(self.velocity.x, self.velocity.y)
+
         self.velocity += self.acceleration * dt
-        self.velocity.cap_magnitude(self.max_speed)
         self.velocity.cap_angle_diff(v_initiale, max_velocity_ang_diff)
+        self.velocity.cap_magnitude(self.max_speed)
+        
         self.position += self.velocity * dt
+        
         self.heading = self.velocity.angle() + math.pi / 2
+        
         # reset acceleration
         self.acceleration = Vector()
 

@@ -10,11 +10,19 @@ class Flock:
     A flock of boids holding the general parameters and for loops to run the
     simulation.
     """
-    def __init__(self, num_boids, width, height):
+    def __init__(self, width, height, num_boids, seed, cone, fov, padding, tore, weights_forces):
+        random.seed(seed)
+
         self.num_boids = num_boids
         self.boids = []
         self.width = width
         self.height = height
+        self.weights_forces = weights_forces
+        self.cone = cone
+        self.fov = fov
+        self.padding = padding
+        self.tore = tore
+
         # initialize random boids
         for _ in range(num_boids):
             pos_x = random.randint(0, self.width)
@@ -28,7 +36,7 @@ class Flock:
         #on choisit un boid a colorier en rouge pour l'observation
         self.boids[0].color = (255, 0, 0)
 
-    def get_neighbours(self, boid, detection_radius, cone=False, fov=math.pi/2):
+    def get_neighbours(self, boid, detection_radius, cone=False, fov=math.pi):
         neighbours = set()
         for other in self.boids:
 
@@ -49,16 +57,14 @@ class Flock:
         return neighbours
 
     def update(self, dt, detection_radius):
-        FOV = math.pi/2
-        tore = False
-        padding = 50
+        weights_forces = self.weights_forces
 
         for boid in self.boids:
-            neighbours = self.get_neighbours(boid, detection_radius, cone=True, fov=FOV)
+            neighbours = self.get_neighbours(boid, detection_radius, self.cone, self.fov)
             nb_neighbours = len(neighbours)
             for neighbour in neighbours:
-                d = boid.position.distance(neighbour.position, self.width, self.height, tore)
-                boid.interact(d, neighbour.velocity, nb_neighbours)
+                d = boid.position.distance(neighbour.position, self.width, self.height, self.tore)
+                boid.interact(d, neighbour.velocity, nb_neighbours, weights_forces)
 
         #f vent
         orientation = math.pi/4
@@ -66,17 +72,8 @@ class Flock:
         wind = Vector(math.cos(orientation), math.sin(orientation)) * wind_strengh
         boid.acceleration += wind
 
-        #f evite bords (deplacé dans bounce)
-        """
-        rappel_strengh = 100
-        if not tore:
-            rappel_au_centre = Vector(1/2 - boid.position.x/(self.width-padding), 1/2 - boid.position.y/(self.height-padding))
-            rappel_strengh_mag = rappel_au_centre.magnitude()
-            boid.acceleration += rappel_au_centre * rappel_strengh * (rappel_strengh_mag*rappel_strengh_mag)
-        """
-
         for boid in self.boids:
-            boid.bounce(self.width, self.height, tore, padding)
+            boid.bounce(self.width, self.height, self.tore, self.padding)
                 
         for boid in self.boids:
             boid.update(dt, max_velocity_ang_diff=math.pi/32)
