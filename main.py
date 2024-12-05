@@ -10,14 +10,14 @@ WINDOW_NAME = "Boids!"
 BACKGRND_COLOR = (20, 20, 20)
 
 
-def run(weigths_forces, args_flock, wind):
+def run(weigths_forces, args_flock, wind, max_time):
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption(WINDOW_NAME)
 
     flock = Flock(WIDTH, HEIGHT, *args_flock, weigths_forces, wind)
 
-    max_time = 10000
+    max_time *= 1000 #on convertit le temps en milisecondes
     run_time = 0
     run = True
     pause = False
@@ -35,7 +35,7 @@ def run(weigths_forces, args_flock, wind):
         dt = clock.tick_busy_loop(framerate)
         run_time += dt
 
-        if run_time >= max_time:
+        if run_time >= max_time and max_time != -1000:
             break
 
         for event in pygame.event.get():
@@ -97,12 +97,13 @@ def read_argv():
     wind_weight = 0 if nb_args_given <= 12 else float(sys.argv[12])
     wind_orientation = 0 if nb_args_given <= 13 else float(sys.argv[13])
     max_rotation = 3.2 if nb_args_given <= 14 else float(sys.argv[14])
+    max_time = -1 if nb_args_given <= 15 else int(sys.argv[15])
 
     weigths_forces = (alignment_weight, cohesion_weight, avoidance_weight, bounce_weight)
     args_flock = (detection_radius, num_boids, seed, isCone, fov, padding, isTore, max_rotation)
     wind = wind_weight, wind_orientation
     
-    return weigths_forces, args_flock, wind
+    return weigths_forces, args_flock, wind, max_time
 
 if __name__ == "__main__":
     args = read_argv()
