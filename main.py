@@ -17,6 +17,8 @@ def run(weigths_forces, args_flock, wind):
 
     flock = Flock(WIDTH, HEIGHT, *args_flock, weigths_forces, wind)
 
+    max_time = 10000
+    run_time = 0
     run = True
     pause = False
     clock = pygame.time.Clock()
@@ -31,6 +33,11 @@ def run(weigths_forces, args_flock, wind):
 
     while run:
         dt = clock.tick_busy_loop(framerate)
+        run_time += dt
+
+        if run_time >= max_time:
+            break
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
