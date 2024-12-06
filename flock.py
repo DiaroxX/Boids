@@ -10,6 +10,7 @@ class Flock:
     A flock of boids holding the general parameters and for loops to run the
     simulation.
     """
+
     def __init__(self, width, height, detection_radius, num_boids, seed, isCone, fov, padding, isTore, max_rotation, weights_forces, wind):
         random.seed(seed)
 
@@ -43,9 +44,13 @@ class Flock:
             vel.cap_magnitude(0.3)
 
             self.boids.append(Boid(pos, vel))
-            
+
 
     def get_neighbours(self, boid):
+        """
+        get_neighbours permet de recuperer un set avec tous les boids detectes par le boid passe en parametre
+        """
+
         neighbours = set()
         for other in self.boids:
 
@@ -62,6 +67,7 @@ class Flock:
             neighbours.remove(boid)
 
         return neighbours
+
 
     def update(self, dt):
         *weights_interactions_forces, bounce_weight = self.weights_forces

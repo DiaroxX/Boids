@@ -12,16 +12,19 @@ class Boid:
         self.position = pos
         self.velocity = vel
         self.acceleration = Vector()
-        #vitesse max deplacee dans flock car commune a tous les boids
+        #max_speed est deplacee dans flock car elle est commune a tous les boids
         self.size = 2
         self.heading = self.velocity.angle() + math.pi / 2
         self.color = (255, 255, 255)
 
     def bounce(self, width, height, isTore, padding, weight):
         if isTore:
+            #le cas principal ou l'espace considere est un tore
             self.position.x %= width
             self.position.y %= height
         else:
+            #le cas optionnel ou les boids rebondissent sur les murs
+            #padding correspond a l'espacement entre les murs et la fenetre de la simulation
             if self.position.x < padding:
                 self.position.x = 2*padding - self.position.x
                 self.velocity.x = abs(self.velocity.x)
@@ -59,6 +62,9 @@ class Boid:
         
 
     def update(self, dt, max_speed, max_rotation):
+        """
+        on met a jour la vitesse et la position du boid grace a l'approximation de la difference finie
+        """
         v_initiale = Vector(self.velocity.x, self.velocity.y)
 
         self.velocity += self.acceleration * dt

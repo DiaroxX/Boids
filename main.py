@@ -34,7 +34,8 @@ def run(weigths_forces, args_flock, wind, max_time):
     while run:
         dt = clock.tick_busy_loop(framerate)
         run_time += dt
-
+        
+        #on ne s'arrete pas si le temps maximum a la valeur par défaut(-1000)
         if run_time >= max_time and max_time != -1000:
             break
 
@@ -44,6 +45,8 @@ def run(weigths_forces, args_flock, wind, max_time):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
+
+                #appuyer sur espace met la simulation en pause
                 if event.key == pygame.K_SPACE:
                     pause = not pause
 
@@ -60,13 +63,19 @@ def run(weigths_forces, args_flock, wind, max_time):
 def error_and_exit(message):
     print(f"Erreur: {message}", file=sys.stderr)
     print(
-        f"\nUsage: {sys.argv[0]} num_boids\n"
+        f"\nUsage: {sys.argv[0]} detection_radius alignment_weight cohesion_weight avoidance_weight num_boids seed\n"
         "\n"
+        " detection_radius: rayon de detection\n"
+        " alignment_weight: coefficient pour la force d'alignement\n"
+        " cohesion_weight: coefficient pour la force de cohesion\n"
+        " avoidance_weight: coefficient pour la force d'evitement\n"
         " num_boids: nombre de boids\n"
+        " seed: graine pour generer la position et la vitesse initiales des boids\n"
         "\n"
-        f"exemple: {sys.argv[0]} 100\n"
+        f"exemple: {sys.argv[0]} 100 10 0.0005 10 100 0\n"
         , file=sys.stderr
     )
+    
     sys.exit(1)
 
 
@@ -89,6 +98,8 @@ def read_argv():
     avoidance_weight = float(sys.argv[4])
     num_boids = int(sys.argv[5])
     seed = int(sys.argv[6])
+
+    #tous les arguments suivants on pour valeures par defaut celles du sujet initial, sans les fonctionnalites supplementaires
     isCone = False if nb_args_given <= 7 else sys.argv[7] == "True"
     fov  = 3.14 if nb_args_given <= 8 else float(sys.argv[8])
     isTore = True if nb_args_given <= 9 else sys.argv[9] == "True"
