@@ -103,12 +103,12 @@ def read_argv():
     isCone = False if nb_args_given <= 7 else sys.argv[7] == "True"
     fov  = 3.14 if nb_args_given <= 8 else float(sys.argv[8])
     isTore = True if nb_args_given <= 9 else sys.argv[9] == "True"
-    padding = 10 if nb_args_given <= 10 else int(sys.argv[10])
-    bounce_weight = 100 if nb_args_given <= 11 else int(sys.argv[11])
+    padding = 50 if nb_args_given <= 10 else int(sys.argv[10])
+    bounce_weight = 1 if nb_args_given <= 11 else int(sys.argv[11])
     wind_weight = 0 if nb_args_given <= 12 else float(sys.argv[12])
     wind_orientation = 0 if nb_args_given <= 13 else float(sys.argv[13])
     max_rotation = 3.2 if nb_args_given <= 14 else float(sys.argv[14])
-    max_time = -1 if nb_args_given <= 15 else int(sys.argv[15])
+    max_time = -1 if nb_args_given <= 15 else float(sys.argv[15])
 
     weigths_forces = (alignment_weight, cohesion_weight, avoidance_weight, bounce_weight)
     args_flock = (detection_radius, num_boids, seed, isCone, fov, padding, isTore, max_rotation)
