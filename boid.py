@@ -28,20 +28,20 @@ class Boid:
             if self.position.x < padding:
                 self.position.x = 2*padding - self.position.x
                 self.velocity.x = abs(self.velocity.x)
-                self.acceleration.x += weight
+                self.acceleration.x *= -weight
             elif self.position.x > width - padding:
                 self.position.x = 2*(width - padding) - self.position.x
                 self.velocity.x = -abs(self.velocity.x)
-                self.acceleration.x -= weight
+                self.acceleration.x *= -weight
 
             if self.position.y < padding:
                 self.position.y = 2*padding - self.position.y
                 self.velocity.y = abs(self.velocity.y)
-                self.acceleration.y += weight
+                self.acceleration.y *= -weight
             elif self.position.y > height - padding:
                 self.position.y = 2*(height - padding) - self.position.y
                 self.velocity.y = -abs(self.velocity.y)
-                self.acceleration.y -= weight
+                self.acceleration.y *= -weight
 
 
     def interact(self, d, v, n, alignment_weight, cohesion_weight, avoidance_weight):
