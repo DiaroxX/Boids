@@ -126,9 +126,7 @@ class Vector:
         if abs(ang_diff) > max_ang_diff:
             #on remplace l'angle par l'angle maximal autorise et oriente de la meme maniere que l'original
             new_ang = ang_before + max_ang_diff * (1 if ang_diff > 0 else -1)
-        else:
-            new_ang = curr_ang
-
-        #on revient a la notation cartesienne
-        self.x = cos(new_ang) * mag
-        self.y = sin(new_ang) * mag
+            
+            #on revient a la notation cartesienne
+            self.x = cos(new_ang) * mag
+            self.y = sin(new_ang) * mag

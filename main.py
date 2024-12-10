@@ -72,7 +72,7 @@ def error_and_exit(message):
         " num_boids: nombre de boids\n"
         " seed: graine pour generer la position et la vitesse initiales des boids\n"
         "\n"
-        f"exemple: {sys.argv[0]} 100 10 0.0005 10 100 0\n"
+        f"exemple: {sys.argv[0]} 70 3 0.03 50 100 0\n"
         , file=sys.stderr
     )
     
