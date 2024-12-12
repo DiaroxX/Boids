@@ -59,7 +59,7 @@ class Boid:
 
         #f alignement
         self.acceleration += alignment_weight*v/n
-        
+
 
     def update(self, dt, max_speed, max_rotation):
         """
